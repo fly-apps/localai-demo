@@ -1,0 +1,23 @@
+app = "lai"
+primary_region = "ord"
+
+[env]
+DEBUG="true"
+THREADS="8"
+MODELS_PATH="/data"
+PRELOAD_MODELS_CONFIG="/preload-models.yaml"
+
+[build]
+image = "quay.io/go-skynet/local-ai:v1.30.0-cublas-cuda12-ffmpeg"
+
+[[files]]
+guest_path = "/preload-models.yaml"
+local_path = "preload-models.yaml"
+
+[http_service]
+internal_port = 8080
+force_https = true
+
+[[mounts]]
+source = "data"
+destination = "/data"

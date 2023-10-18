@@ -1,0 +1,64 @@
+#!/bin/bash
+set -euo pipefail
+${DEBUG+set -x}
+
+: ${BASEURL:=https://lai.fly.dev}
+: ${OVERRIDES:='{"f16":true, "gpu_layers": 35, "mmap": true, "batch": 512 }'}
+: ${ACTION:=${1:-help}}
+shift || true
+
+USAGE="Command line interface for LocalAI at ${BASEURL}
+
+usage:
+	$(basename $0) chat \"say something\"
+	$(basename $0) image \"a cat driving a red plane\"
+	$(basename $0) transcribe [path-to-audio-file]
+"
+
+_curl () {
+	path=$1; shift
+	curl -s ${DEBUG+-v} ${BASEURL}${path} "$@"
+}
+
+_jsoncurl() {
+	_curl "$@" -H "Content-Type: application/json"
+}
+
+_models_apply() {
+	local id=$1
+	local name=${2:-$id}
+	_jsoncurl /models/apply -d '{"id": "'"${id}"'", "name": "'"${name}"'", "overrides": '"${OVERRIDES}"'}'
+}
+
+_models_list() {
+	_jsoncurl /models/available #|jq .[].name
+}
+
+_oai_images_generations() {
+	local prompt=${1:-A cute baby sea otter} size=${2:-256x256}
+	_jsoncurl /v1/images/generations -d '{"prompt": "'"${prompt}"'", "size": "'"${size}"'"}'
+}
+
+_oai_chat_completions() {
+	local content=${1:-Describe a balloon in a fresh and sensitive way}
+	local model=${2:-gpt-3.5-turbo}
+	_jsoncurl /v1/chat/completions \
+		-d '{"model": "'"${model}"'", 
+				 "messages": [{"role": "user", "content": "'"${content}"'"}],
+				 "temperature": 0.1}'
+}
+
+_oai_audio_transcriptions() {
+	local audiofile=${1:-samples/OSR_uk_000_0050_8k.wav}
+	_curl /v1/audio/transcriptions -H "Content-Type: multipart/form-data" \
+		-F file="@${audiofile}" -F model="whisper-1"
+}
+
+case $ACTION in
+	models-list) _models_list;;
+	models-apply) _models_apply "$@";;
+	oai-images-genenrations|image) _oai_images_generations "$@";;
+	oai-chat-completions|chat) _oai_chat_completions "$@";;
+	oai-audio-transcriptions|transcribe) _oai_audio_transcriptions "$@";;
+	*) echo "${USAGE}";;
+esac

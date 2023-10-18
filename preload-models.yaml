@@ -1,0 +1,21 @@
+# LocalAI preloaded modules
+- name: "gpt-3.5-turbo"
+  id: "thebloke__falcon-7b-instruct-ggml__falcon-7b-instruct.ggccv1.q4_0.bin"
+  overrides: 
+    backend: "falcon"
+    f16: true
+    mmap: true
+    gpu_layers": 1
+    batch: 512
+
+- id: "stablediffusion"
+  name: "stablediffusion"
+  overrides: 
+    f16: true
+    diffusers:
+      cuda: true
+
+- name: "whisper-1"
+  id: "danielus__ggml-whisper-models__ggml-large-v2-q5_1.bin"
+  overrides: 
+    backend: "whisper"
