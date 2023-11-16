@@ -1,0 +1,5 @@
+name: "base"
+license: "N/A"
+config_file: |
+  parameters:
+    model: model

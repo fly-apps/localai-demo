@@ -4,15 +4,29 @@ primary_region = "ord"
 [env]
 DEBUG="true"
 THREADS="8"
-MODELS_PATH="/data"
-PRELOAD_MODELS_CONFIG="/preload-models.yaml"
+MODELS_PATH="/data/models"
+IMAGE_PATH="/data/output/images"
+AUDIO_PATH="/data/output/audio"
+PRELOAD_MODELS_CONFIG="/opt/preload-models.yaml"
 
 [build]
-image = "quay.io/go-skynet/local-ai:v1.30.0-cublas-cuda12-ffmpeg"
+#image = "quay.io/go-skynet/local-ai:master-cublas-cuda12-ffmpeg"
+image = "quay.io/go-skynet/local-ai:sha-432513c-cublas-cuda11-ffmpeg"
+
+[experimental]
+entrypoint = ["/bin/bash", "-c", "/opt/entrypoint.sh"]
 
 [[files]]
-guest_path = "/preload-models.yaml"
+guest_path = "/opt/preload-models.yaml"
 local_path = "preload-models.yaml"
+
+[[files]]
+guest_path = "/opt/model-base.yaml"
+local_path = "model-base.yaml"
+
+[[files]]
+guest_path = "/opt/entrypoint.sh"
+local_path = "entrypoint.sh"
 
 [http_service]
 internal_port = 8080

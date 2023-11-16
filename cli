@@ -35,8 +35,11 @@ _models_list() {
 }
 
 _oai_images_generations() {
-	local prompt=${1:-A cute baby sea otter} size=${2:-256x256}
-	_jsoncurl /v1/images/generations -d '{"prompt": "'"${prompt}"'", "size": "'"${size}"'"}'
+	local prompt=${1:-An purple balloon} size=${2:-512x512}
+	_jsoncurl /v1/images/generations \
+		-d '{"prompt": "'"${prompt}"'",
+			   "model": "deepfloyd",
+				 "size": "'"${size}"'"}'
 }
 
 _oai_chat_completions() {
