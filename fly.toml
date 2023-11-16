@@ -1,5 +1,6 @@
-app = "lai"
+app = "localai-demo"
 primary_region = "ord"
+vm.size = "a100-40gb"
 
 [env]
 DEBUG="true"
